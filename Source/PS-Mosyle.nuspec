@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>ps-mosyle</id>
+        <version>0.0.1</version>
+        <authors>Jason Robertson</authors>
+        <projectUrl>https://github.com/JasonRobertson/PS-Mosyle</projectUrl>
+        <license type="expression">MIT</license>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <releaseNotes>Bug fixes and performance improvements</releaseNotes>
+        <description>The module allows you to quickly retrieve details from Mosyle.</description>
+        <copyright>Copyright ©2024 Jason Robertson</copyright>
+        <tags>psmodule web mosyle</tags>
+    </metadata>
+</package>
