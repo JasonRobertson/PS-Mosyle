@@ -19,7 +19,7 @@ function Invoke-MosyleAPI {
     $restMethod.ContentType           = 'application/json'
     $restMethod.Headers               = [hashtable]::new()
     $restMethod.Headers.Accept        = 'application/json'
-    $restMethod.Headers.accessToken   = [pscredential]::new(' ',$connectionMosyle.AccessToken).GetNetworkCredential().password
+    $restMethod.Headers.accessToken   = $connectionMosyle.AccessToken.GetNetworkCredential().password
     $restMethod.Headers.Authorization = $connectionMosyle.AuthToken.GetNetworkCredential().password
     $restMethod.FollowRelLink         = $all
     try {
