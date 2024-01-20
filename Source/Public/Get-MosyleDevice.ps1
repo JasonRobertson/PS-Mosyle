@@ -17,13 +17,13 @@ function Get-MosyleDevice {
     [int]$Limit = 5000
   )
   begin {
-    $options = [hashtable]::new()
-    $options.os = switch ($OS) {
-      macOS {'mac'}
-      iOS   {'ios'}
-      tvOS  {'tvos'}
-      default {'mac'}
-    }
+    $options          = [hashtable]::new()
+    $options.os       = switch ($OS) {
+                          macOS   {'mac'}
+                          iOS     {'ios'}
+                          tvOS    {'tvos'}
+                          default {'mac'}
+                        }
     $options.page_size = $limit
 
     if ($tags)          { $options.tags            = $tags}
