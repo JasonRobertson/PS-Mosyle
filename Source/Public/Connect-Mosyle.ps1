@@ -46,27 +46,27 @@ function Connect-Mosyle {
     [PSCredential]$Credential,
     [Parameter(Mandatory)]
     [ValidateNotNull()]
-    [SecureString]$AccessToken = $(Get-Credential -UserName AccessToken -Message 'Enter the Mosyle API Integration Access Token').Password
+    [pscredential]$AccessToken
   )
   begin {}
   process {
-    $URI            = 'https://businessapi.mosyle.com/v1'
+    $uri            = 'https://businessapi.mosyle.com/v1'
     $body           = [hashtable]::new()
     $body.email     = $credential.UserName
     $body.password  = $credential.GetNetworkCredential().Password
 
     $headers              = [hashtable]::new()
     $headers.Accept       = 'application/json'
-    $headers.accessToken  = [pscredential]::New('accessToken',$AccessToken).GetNetworkCredential().Password
+    $headers.accessToken  = $AccessToken.GetNetworkCredential().Password
 
     $restMethod                         = [hashtable]::new()
-    $restMethod.URI                     = "$URI/login"
+    $restMethod.URI                     = "$uri/login"
     $restMethod.Body                    = $body | ConvertTo-Json
     $restMethod.Method                  = 'POST'
     $restMethod.Headers                 = $headers
     $restMethod.ContentType             = 'application/json'
     $restMethod.ErrorAction             = 'STOP'
-    $restMethod.ResponseHeadersVariable = 'mosyleResponseHeaders'
+    $restMethod.ResponseHeadersVariable = 'apiResponseHeaders'
 
     try {
       $apiResponse = Invoke-RestMethod @restMethod
@@ -82,16 +82,17 @@ function Connect-Mosyle {
       )
       $pscmdlet.ThrowTerminatingError($errorRecord)
     }
-    if ($apiResponse -and $mosyleResponseHeaders) {
+    if ($apiResponse -and $apiResponseHeaders) {
       Write-Host -ForegroundColor Green -Message "Sucessfully connected to Mosyle"
-      $global:connectionMosyle = [pscustomobject][ordered]@{
-        Uri         = $uri
-        Email       = $apiResponse.email
-        UserID      = $apiResponse.UserID
-        AuthToken   = [pscredential]::new(' ',(ConvertTo-SecureString -AsPlainText -string $($mosyleResponseHeaders.Authorization) -Force))
-        AccessToken = $AccessToken
+      $script:connectionMosyle = [pscustomobject][ordered]@{
+        Uri                   = $uri
+        Email                 = $apiResponse.email
+        UserID                = $apiResponse.UserID
+        AuthToken             = [pscredential]::new(' ',(ConvertTo-SecureString -AsPlainText -string $($apiResponseHeaders.Authorization) -Force))
+        AuthTokenExpiration   = [DateTime]::ParseExact($apiResponseHeaders.Expires.TrimEnd(' GMT'), "ddd, dd MMM yyyy HH:mm:ss", [System.Globalization.CultureInfo]::InvariantCulture).ToString('s')
+        AccessToken           = $AccessToken
       }
-      $connectionMosyle | Format-List Email, UserID
+      $connectionMosyle | Format-List Email, UserID, AuthTokenExpiration
     }
   }
   end {}
